@@ -79,8 +79,12 @@ public class Frame extends JFrame {
     public void decryptInGUI() {
         jTextArea.setText("");
         num.setText("");
+        if (getSALTVALUE() == null)
+            setSALTVALUE(SALTVALUE);
+
         ArrayList<String> list = fileAccesser.read(chosenFile);
         for (int i = 0; i < list.size(); i++) {
+
             String decryptedval = encryptor.decrypt(list.get(i), getSECRET_KEY(), getSALTVALUE(),getItterationNum());
             encryptionFailed = decryptedval == null;
             updateNotifications();
