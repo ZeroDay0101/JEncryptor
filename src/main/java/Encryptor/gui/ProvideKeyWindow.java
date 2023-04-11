@@ -2,15 +2,22 @@ package Encryptor.gui;
 
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
+import javax.accessibility.Accessible;
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.util.Objects;
 
 public class ProvideKeyWindow extends JFrame {
+
     NotificationPanel notificationPanel = new NotificationPanel(Color.WHITE);
 
     public ProvideKeyWindow(Frame frame, boolean saveFile) {
@@ -18,7 +25,10 @@ public class ProvideKeyWindow extends JFrame {
         this.setVisible(true);
 
 
-        JTextArea key = new JTextArea("Enter password");
+        JPasswordField key = new JPasswordField();
+        key.setText("Enter password");
+        key.setEchoChar((char) 0);
+
         JTextArea salt = new JTextArea("Enter salt (Optional if you don't want to use hard-coded)");
         JTextArea iterationNum = new JTextArea("Enter iteration number (min. 65565 highly recommended) !!! (default = 100000)");
         iterationNum.setText("100000 (Number of iterations)");
@@ -28,8 +38,14 @@ public class ProvideKeyWindow extends JFrame {
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
 
+        JPanel keyPanel = new JPanel();
+        keyPanel.setLayout(new BorderLayout());
+        keyPanel.add(key,BorderLayout.CENTER);
+        JButton showPassword = new JButton("V");
 
-        panel.add(key);
+        keyPanel.add(showPassword,BorderLayout.EAST);
+
+        panel.add(keyPanel);
         panel.add(advancedCheckbox);
         panel.setLayout(new GridLayout(panel.getComponentCount(),0));
 
@@ -37,6 +53,7 @@ public class ProvideKeyWindow extends JFrame {
 
 
         JButton button = new JButton("Submit");
+
         this.add(button, BorderLayout.EAST);
 
 
@@ -46,22 +63,69 @@ public class ProvideKeyWindow extends JFrame {
 
         notificationPanel.updatePanel();
 
+
+
         this.pack();
 
 
+
+
+       DocumentListener Ls = new DocumentListener() {
+
+            public void changedUpdate(DocumentEvent e) {}
+            public void removeUpdate(DocumentEvent e) {
+
+            }
+            public void insertUpdate(DocumentEvent e) {
+                JTextComponent text = null;
+                if (e.getDocument() == salt.getDocument())
+                    text = salt;else if (e.getDocument() == iterationNum.getDocument())
+                        text = iterationNum;
+                    else {
+                    text = key;
+                    key.setEchoChar('*');
+                }
+                r(text);
+                text.getDocument().removeDocumentListener(this);
+
+            }
+            private void r(JTextComponent type) {
+                Runnable doHighlight = new Runnable() {
+                    @Override
+                    public void run() {
+                        type.setText(type.getText().substring(type.getText().length() - 1));
+                    }
+                };
+                SwingUtilities.invokeLater(doHighlight);
+            }
+
+        };
+        key.getDocument().addDocumentListener(Ls);
+        salt.getDocument().addDocumentListener(Ls);
+        iterationNum.getDocument().addDocumentListener(Ls);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.setSECRET_KEY(key.getText());
                 if (advancedCheckbox.isSelected() && salt.getText() != null && isCorrectNumber(iterationNum.getText())) {
                     if (!Objects.equals(salt.getText(), "Enter salt (Optional if you don't want to use hard-coded)"))
                         frame.setSALTVALUE(salt.getText());
-                    frame.setItterationNum(Integer.parseInt(iterationNum.getText()));
+                    if (!iterationNum.getText().isEmpty())
+                        frame.setItterationNum(Integer.parseInt(iterationNum.getText()));
                 }
 
                 ProvideKeyWindow.this.setVisible(false);
                 if (saveFile)
                     frame.saveFile();
                 frame.decryptInGUI();
+            }
+        });
+        showPassword.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (key.getEchoChar() == '*')
+                    key.setEchoChar((char) 0);
+                else
+                    key.setEchoChar('*');
+
             }
         });
         advancedCheckbox.addItemListener(new ItemListener() {
@@ -97,5 +161,6 @@ public class ProvideKeyWindow extends JFrame {
         }
         return true;
     }
+
 
 }
