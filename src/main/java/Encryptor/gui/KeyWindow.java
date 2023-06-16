@@ -1,9 +1,6 @@
 package Encryptor.gui;
 
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
-import javax.accessibility.Accessible;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -13,14 +10,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 import java.util.Objects;
 
-public class ProvideKeyWindow extends JFrame {
+public class KeyWindow extends JFrame {
 
-    NotificationPanel notificationPanel = new NotificationPanel(Color.WHITE);
+    private final NotificationPanel notificationPanel = new NotificationPanel(Color.WHITE);
 
-    public ProvideKeyWindow(Frame frame, boolean saveFile) {
+    public KeyWindow(Frame frame, boolean saveFile) {
         this.setResizable(false);
         this.setVisible(true);
 
@@ -40,14 +36,14 @@ public class ProvideKeyWindow extends JFrame {
 
         JPanel keyPanel = new JPanel();
         keyPanel.setLayout(new BorderLayout());
-        keyPanel.add(key,BorderLayout.CENTER);
+        keyPanel.add(key, BorderLayout.CENTER);
         JButton showPassword = new JButton("V");
 
-        keyPanel.add(showPassword,BorderLayout.EAST);
+        keyPanel.add(showPassword, BorderLayout.EAST);
 
         panel.add(keyPanel);
         panel.add(advancedCheckbox);
-        panel.setLayout(new GridLayout(panel.getComponentCount(),0));
+        panel.setLayout(new GridLayout(panel.getComponentCount(), 0));
 
         this.add(panel, BorderLayout.CENTER);
 
@@ -64,24 +60,25 @@ public class ProvideKeyWindow extends JFrame {
         notificationPanel.updatePanel();
 
 
-
         this.pack();
 
 
+        DocumentListener Ls = new DocumentListener() {
 
+            public void changedUpdate(DocumentEvent e) {
+            }
 
-       DocumentListener Ls = new DocumentListener() {
-
-            public void changedUpdate(DocumentEvent e) {}
             public void removeUpdate(DocumentEvent e) {
 
             }
+
             public void insertUpdate(DocumentEvent e) {
                 JTextComponent text = null;
                 if (e.getDocument() == salt.getDocument())
-                    text = salt;else if (e.getDocument() == iterationNum.getDocument())
-                        text = iterationNum;
-                    else {
+                    text = salt;
+                else if (e.getDocument() == iterationNum.getDocument())
+                    text = iterationNum;
+                else {
                     text = key;
                     key.setEchoChar('*');
                 }
@@ -89,6 +86,7 @@ public class ProvideKeyWindow extends JFrame {
                 text.getDocument().removeDocumentListener(this);
 
             }
+
             private void r(JTextComponent type) {
                 Runnable doHighlight = new Runnable() {
                     @Override
@@ -113,7 +111,7 @@ public class ProvideKeyWindow extends JFrame {
                         frame.setItterationNum(Integer.parseInt(iterationNum.getText()));
                 }
 
-                ProvideKeyWindow.this.setVisible(false);
+                KeyWindow.this.setVisible(false);
                 if (saveFile)
                     frame.saveFile();
                 frame.decryptInGUI();
@@ -131,7 +129,7 @@ public class ProvideKeyWindow extends JFrame {
         advancedCheckbox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                notificationPanel.notifications.clear();
+                notificationPanel.getNotifications().clear();
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     panel.remove(advancedCheckbox);
                     panel.add(salt);
@@ -146,17 +144,17 @@ public class ProvideKeyWindow extends JFrame {
                 }
                 notificationPanel.updatePanel();
                 ((GridLayout) panel.getLayout()).setRows(panel.getComponentCount());
-                ProvideKeyWindow.this.pack();
+                KeyWindow.this.pack();
                 panel.repaint();
                 panel.revalidate();
             }
         });
     }
+
     private boolean isCorrectNumber(String input) {
         try {
             Integer.parseInt(input);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
