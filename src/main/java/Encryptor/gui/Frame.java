@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Frame extends JFrame {
-    public final JTextArea jTextArea = new JTextArea();
-    public final JTextArea num = new JTextArea();
+    private final JTextArea jTextArea = new JTextArea();
+    private final JTextArea num = new JTextArea();
 
     private final FileAccesser fileAccesser = new FileAccesser();
     private final Encryptor encryptor = new Encryptor();
@@ -55,6 +55,10 @@ public class Frame extends JFrame {
         this.itterationNum = itterationNum;
     }
 
+    public JTextArea getjTextArea() {
+        return jTextArea;
+    }
+
     private int itterationNum = 100000;
 
     NotificationPanel notificationPanel = new NotificationPanel(Color.PINK);
@@ -85,7 +89,7 @@ public class Frame extends JFrame {
         ArrayList<String> list = fileAccesser.read(chosenFile);
         for (int i = 0; i < list.size(); i++) {
 
-            String decryptedval = encryptor.decrypt(list.get(i), getSECRET_KEY(), getSALTVALUE(),getItterationNum());
+            String decryptedval = encryptor.decrypt(list.get(i), getSECRET_KEY(), getSALTVALUE(), getItterationNum());
             encryptionFailed = decryptedval == null;
             updateNotifications();
             jTextArea.append(decryptedval + System.getProperty("line.separator"));
@@ -108,7 +112,7 @@ public class Frame extends JFrame {
             lines++;
         }
         for (int i = 0; i < lines; i++) {
-            String encryptedval = encryptor.encrypt(list.get(i), getSECRET_KEY(), getSALTVALUE(),getItterationNum());
+            String encryptedval = encryptor.encrypt(list.get(i), getSECRET_KEY(), getSALTVALUE(), getItterationNum());
             fileAccesser.write(chosenFile, encryptedval);
         }
 
@@ -129,21 +133,21 @@ public class Frame extends JFrame {
     }
 
     public void updateNotifications() {
-        notificationPanel.notifications.clear();
+        notificationPanel.getNotifications().clear();
 
         if (chosenFile == null)
-            notificationPanel.addNotification("File not selected",Color.RED);
+            notificationPanel.addNotification("File not selected", Color.RED);
         else
-            this.setTitle("Java encryptor - " +  "File: " + chosenFile.getPath());
+            this.setTitle("Java encryptor - " + "File: " + chosenFile.getPath());
 
         if (getSECRET_KEY() == null)
-            notificationPanel.addNotification("Key not provided",Color.RED);
+            notificationPanel.addNotification("Key not provided", Color.RED);
         if (encryptionFailed) {
-            notificationPanel.addNotification("Provided key (or salt and iterationNum if changed) threw an exception and is probably wrong",Color.RED);
+            notificationPanel.addNotification("Provided key (or salt and iterationNum if changed) threw an exception and is probably wrong", Color.RED);
         }
 
 
-        if (notificationPanel.notifications.isEmpty())
+        if (notificationPanel.getNotifications().isEmpty())
             notificationPanel.setBackground(Color.WHITE);
         else
             notificationPanel.setBackground(Color.PINK);

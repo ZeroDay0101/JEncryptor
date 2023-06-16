@@ -1,9 +1,6 @@
 package Encryptor;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -23,10 +20,10 @@ public class FileAccesser {
         return result;
     }
 
-    public void write(File path,String text) {
+    public void write(File path, String text) {
         try {
             PrintWriter out = new PrintWriter(new FileWriter(path, true));
-            out.append(text + System.getProperty("line.separator") );
+            out.append(text + System.getProperty("line.separator"));
 
             out.close();
             System.out.println("Successfully wrote line to the file.");
@@ -35,6 +32,7 @@ public class FileAccesser {
             e.printStackTrace();
         }
     }
+
     public void clearTheFile(File path) throws IOException {
         new FileWriter(path, false).close();
     }

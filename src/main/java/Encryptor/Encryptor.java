@@ -1,28 +1,21 @@
 package Encryptor;
 
-import Encryptor.gui.Frame;
-
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.swing.*;
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Scanner;
 
 public class Encryptor {
 
-
     /* Encryption Method */
-    public String encrypt(String strToEncrypt, String SECRET_KEY, String SALTVALUE,int iterationNum) {
+    public String encrypt(String strToEncrypt, String SECRET_KEY, String SALTVALUE, int iterationNum) {
         try {
             /* Declare a byte array. */
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // Ivs are useless in local-file encryption and therefore don't need to be randomized and stored
@@ -46,7 +39,7 @@ public class Encryptor {
     }
 
     /* Decryption Method */
-    public String decrypt(String strToDecrypt, String SECRET_KEY, String SALTVALUE,int iterationNum) {
+    public String decrypt(String strToDecrypt, String SECRET_KEY, String SALTVALUE, int iterationNum) {
         try {
             /* Declare a byte array. */
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // Ivs are useless in local-file encryption and therefore don't need to be randomized and stored

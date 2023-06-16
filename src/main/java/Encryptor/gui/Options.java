@@ -1,12 +1,15 @@
 package Encryptor.gui;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 
 public class Options extends JPanel {
 
@@ -17,17 +20,19 @@ public class Options extends JPanel {
 
     private final JButton decrypt = new JButton("Show encrypted");
 
+    private final JPanel panel = new JPanel();
+    private JSlider randomPasswdLengthSlider = new JSlider(1, 50);
+    private final JButton generateRandomPassword = new JButton("Generate random password");
+
+    private final JLabel generateRandomPasswordValue = new JLabel(String.valueOf(randomPasswdLengthSlider.getValue()));
     private boolean showingEncrypted = false;
 
 
     public Options(Frame frame) {
         this.frame = frame;
         this.setLayout(new GridLayout());
-        this.setPreferredSize(new Dimension(0, 20));
-
 
         open.setFocusPainted(false);
-
         save.setFocusPainted(false);
         save.setEnabled(false);
 
@@ -40,11 +45,25 @@ public class Options extends JPanel {
         this.add(decrypt);
 
 
+
+        this.add(generateRandomPassword);
+
+        this.add(panel);
+
+        panel.setBackground(Color.WHITE);
+        panel.setLayout(new GridLayout(2,1));
+        panel.add(randomPasswdLengthSlider);
+        generateRandomPasswordValue.setHorizontalAlignment(JLabel.CENTER);
+        panel.add(generateRandomPasswordValue);
+
+
+
+
         open.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 choseAFile();
                 if (frame.getChosenFile() != null)
-                    new ProvideKeyWindow(frame, false);
+                    new KeyWindow(frame, false);
 
             }
         });
@@ -56,8 +75,7 @@ public class Options extends JPanel {
                     if (!showingEncrypted) {
                         frame.decryptInGUI();
                         save.setEnabled(true);
-                    }
-                    else {
+                    } else {
                         frame.encryptInGui();
                         save.setEnabled(false);
                     }
@@ -73,6 +91,36 @@ public class Options extends JPanel {
             }
 
         });
+        generateRandomPassword.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                final String LOWERCASE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
+                final String UPPERCASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                final String DIGITS = "0123456789";
+                final String SPECIAL_CHARACTERS = "!@#$%^&*()-_=+\\|[{]};:'\",<.>/?";
+
+                String validCharacters = LOWERCASE_LETTERS + UPPERCASE_LETTERS + DIGITS + SPECIAL_CHARACTERS;
+                SecureRandom random = new SecureRandom();
+
+                int passwdLength = randomPasswdLengthSlider.getValue();
+                StringBuilder passwordBuilder = new StringBuilder(passwdLength);
+
+                for (int i = 0; i < passwdLength; i++) {
+                    int randomIndex = random.nextInt(validCharacters.length());
+                    char randomChar = validCharacters.charAt(randomIndex);
+                    passwordBuilder.append(randomChar);
+                }
+                frame.getjTextArea().append(passwordBuilder + System.lineSeparator());
+            }
+        });
+        randomPasswdLengthSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Options.this.generateRandomPasswordValue.setText(String.valueOf(randomPasswdLengthSlider.getValue()));
+                repaint();
+            }
+
+        });
+
     }
 
     public void choseAFile() {
