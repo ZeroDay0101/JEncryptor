@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="JEncryptor:jar">
+    <output-path>$PROJECT_DIR$/../../../../enc</output-path>
+    <root id="archive" name="JEncryptor.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="JEncryptor" />
+    </root>
+  </artifact>
+</component>

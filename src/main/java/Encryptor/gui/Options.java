@@ -15,7 +15,9 @@ public class Options extends JPanel {
 
     private final Frame frame;
 
-    private final JButton open = new JButton("Select");
+    private final JButton open = new JButton("Select file");
+
+    private final JButton create = new JButton("Create file");
     private final JButton save = new JButton("Encrypt and Save");
 
     private final JButton decrypt = new JButton("Show encrypted");
@@ -33,6 +35,7 @@ public class Options extends JPanel {
         this.setLayout(new GridLayout());
 
         open.setFocusPainted(false);
+        create.setFocusPainted(false);
         save.setFocusPainted(false);
         save.setEnabled(false);
 
@@ -41,6 +44,7 @@ public class Options extends JPanel {
 
 
         this.add(open);
+        //this.add(create);
         this.add(save);
         this.add(decrypt);
 
@@ -62,10 +66,20 @@ public class Options extends JPanel {
         open.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 choseAFile();
+                frame.updateNotifications();
                 if (frame.getChosenFile() != null)
                     new KeyWindow(frame, false);
 
             }
+        });
+        create.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                choseAFile();
+                frame.updateNotifications();
+                if (frame.getChosenFile() != null)
+                    new KeyWindow(frame, false);
+            }
+
         });
 
         decrypt.addActionListener(new ActionListener() {
@@ -109,7 +123,7 @@ public class Options extends JPanel {
                     char randomChar = validCharacters.charAt(randomIndex);
                     passwordBuilder.append(randomChar);
                 }
-                frame.getjTextArea().append(passwordBuilder + System.lineSeparator());
+                frame.getjTextArea().append(String.valueOf(passwordBuilder));
             }
         });
         randomPasswdLengthSlider.addChangeListener(new ChangeListener() {
@@ -142,6 +156,8 @@ public class Options extends JPanel {
 
         if (result == JOptionPane.OK_OPTION) {
             try {
+                if (!String.valueOf(frame.getChosenFile()).toUpperCase().contains(".JAE"))
+                    frame.setChosenFile(new File(frame.getChosenFile() + ".JAE"));
                 frame.getChosenFile().createNewFile();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

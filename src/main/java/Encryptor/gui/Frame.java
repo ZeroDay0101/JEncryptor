@@ -67,7 +67,7 @@ public class Frame extends JFrame {
 
 
     public Frame() {
-        this.setBounds(300, 100, 600, 600);
+        this.setBounds(300, 100, 900, 600);
         this.setLayout(new BorderLayout());
         num.setEditable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

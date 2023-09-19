@@ -22,7 +22,9 @@ public class KeyWindow extends JFrame {
 
 
         JPasswordField key = new JPasswordField();
-        key.setText("Enter password");
+        String defaultText = "Enter password (If you are creating it make sure to remember it)";
+
+        key.setText(defaultText);
         key.setEchoChar((char) 0);
 
         JTextArea salt = new JTextArea("Enter salt (Optional if you don't want to use hard-coded)");
@@ -103,6 +105,9 @@ public class KeyWindow extends JFrame {
         iterationNum.getDocument().addDocumentListener(Ls);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if (Objects.equals(key.getText(), defaultText))
+                    key.setText("");
+
                 frame.setSECRET_KEY(key.getText());
                 if (advancedCheckbox.isSelected() && salt.getText() != null && isCorrectNumber(iterationNum.getText())) {
                     if (!Objects.equals(salt.getText(), "Enter salt (Optional if you don't want to use hard-coded)"))
